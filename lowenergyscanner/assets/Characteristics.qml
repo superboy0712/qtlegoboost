@@ -64,26 +64,8 @@ Rectangle {
     Dialog {
         id: info
         anchors.centerIn: parent
-        visible: true
+        visible: false
         dialogText: "Scanning for characteristics...";
-    }
-
-    Connections {
-        target: device
-        onCharacteristicsUpdated: {
-            menu.menuText = "Back"
-            if (characteristicview.count === 0) {
-                info.dialogText = "No characteristic found"
-                info.busyImage = false
-            } else {
-                info.visible = false
-                info.busyImage = true
-            }
-        }
-
-        onDisconnected: {
-            pageLoader.source = "main.qml"
-        }
     }
 
     ListView {

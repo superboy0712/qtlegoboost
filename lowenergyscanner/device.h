@@ -118,6 +118,9 @@ private slots:
     // QLowEnergyService related
     void serviceDetailsDiscovered(QLowEnergyService::ServiceState newState);
 
+    void updateValue(const QLowEnergyCharacteristic &c, const QByteArray &value);
+    void confirmedDescriptorWrite();
+
 Q_SIGNALS:
     void devicesUpdated();
     void servicesUpdated();
@@ -134,6 +137,9 @@ private:
     QList<QObject *> devices;
     QList<QObject *> m_services;
     QList<QObject *> m_characteristics;
+    QString m_currentAddress;
+    QString m_service;
+    QString m_characteristic;
     QString m_previousAddress;
     QString m_message;
     bool connected = false;

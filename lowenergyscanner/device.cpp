@@ -64,6 +64,8 @@
 #include <legocdmotor.h>
 
 Device::Device()
+    : m_service("{00001623-1212-efde-1623-785feabcd123}")
+    , m_characteristic("{00001624-1212-efde-1623-785feabcd123}")
 {
     //! [les-devicediscovery-1]
     discoveryAgent = new QBluetoothDeviceDiscoveryAgent();
@@ -112,6 +114,10 @@ void Device::addDevice(const QBluetoothDeviceInfo &info)
 {
     if (info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) {
         if (info.name() == "LEGO Move Hub") {
+            qDebug() << Q_FUNC_INFO
+                     << ", name: " << info.name()
+                     << ", address: " << info.address()
+                     << ", deviceUuid: " << info.deviceUuid();
             auto d = new DeviceInfo(info);
             devices.append(d);
             setUpdate("Last device added: " + d->getName());
@@ -153,6 +159,7 @@ QString Device::getUpdate()
 
 void Device::scanServices(const QString &address)
 {
+    qDebug() << Q_FUNC_INFO << " address: " << address;
     // We need the current device for service discovery.
 
     for (auto d: qAsConst(devices)) {
@@ -160,7 +167,7 @@ void Device::scanServices(const QString &address)
         if (!device)
             continue;
 
-        if (device->getAddress() == address )
+        if (device->getAddress() == address)
             currentDevice.setDevice(device->getDevice());
     }
 
@@ -178,7 +185,9 @@ void Device::scanServices(const QString &address)
 
     setUpdate("Back\n(Connecting to device...)");
 
-    if (controller && m_previousAddress != currentDevice.getAddress()) {
+    m_currentAddress = currentDevice.getAddress();
+
+    if (controller && m_previousAddress != m_currentAddress) {
         controller->disconnectFromDevice();
         delete controller;
         controller = nullptr;
@@ -207,11 +216,15 @@ void Device::scanServices(const QString &address)
     controller->connectToDevice();
     //! [les-controller-1]
 
-    m_previousAddress = currentDevice.getAddress();
+    m_previousAddress = m_currentAddress;
 }
 
 void Device::addLowEnergyService(const QBluetoothUuid &serviceUuid)
 {
+    qDebug() << Q_FUNC_INFO << " serviceUuid: " << serviceUuid;
+    if (serviceUuid.toString() != m_service)
+        return;
+
     //! [les-service-1]
     QLowEnergyService *service = controller->createServiceObject(serviceUuid);
     if (!service) {
@@ -259,6 +272,8 @@ void Device::connectToService(const QString &uuid)
         //! [les-service-3]
         connect(service, &QLowEnergyService::stateChanged,
                 this, &Device::serviceDetailsDiscovered);
+        connect(service, &QLowEnergyService::characteristicChanged, this, &Device::updateValue);
+        connect(service, &QLowEnergyService::descriptorWritten, this, &Device::confirmedDescriptorWrite);
         service->discoverDetails();
         setUpdate("Back\n(Discovering details...)");
         //! [les-service-3]
@@ -315,35 +330,68 @@ void Device::deviceDisconnected()
     emit disconnected();
 }
 
-void Device::serviceDetailsDiscovered(QLowEnergyService::ServiceState newState)
+void Device::serviceDetailsDiscovered(QLowEnergyService::ServiceState s)
 {
-    if (newState != QLowEnergyService::ServiceDiscovered) {
-        // do not hang in "Scanning for characteristics" mode forever
-        // in case the service discovery failed
-        // We have to queue the signal up to give UI time to even enter
-        // the above mode
-        if (newState != QLowEnergyService::DiscoveringServices) {
-            QMetaObject::invokeMethod(this, "characteristicsUpdated",
-                                      Qt::QueuedConnection);
+    qDebug() << Q_FUNC_INFO;
+    switch (s) {
+    case QLowEnergyService::DiscoveringServices:
+        qDebug() << "Discovering services...";
+        break;
+    case QLowEnergyService::ServiceDiscovered:
+    {
+        qDebug() << "Service discovered.";
+
+        auto service = qobject_cast<QLowEnergyService *>(sender());
+        if (!service)
+            return;
+
+        const QList<QLowEnergyCharacteristic> chars = service->characteristics();
+        qDebug() << "chars size: " << chars.size();
+        for (const QLowEnergyCharacteristic &ch : chars) {
+            auto cInfo = new CharacteristicInfo(ch);
+            m_characteristics.append(cInfo);
+            if (ch.isValid()) {
+                qDebug() << "value: " << ch.value().toHex() << "-" << ch.value().size();
+                auto notificationDesc = ch.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
+                if (notificationDesc.isValid()) {
+                    service->writeDescriptor(notificationDesc, QByteArray::fromHex("0100"));
+                    //service->writeCharacteristic(ch, QByteArray::fromHex("0a01413b000100000001"));
+                }
+
+                const QList<QLowEnergyDescriptor> descs = ch.descriptors();
+                qDebug() << "descs size: " << descs.size();
+                for (const QLowEnergyDescriptor &des : descs) {
+                    qDebug() << "des: " << des.name()
+                             << "-" << des.uuid()
+                             << "-" << des.type()
+                             << "-" << des.value()
+                             << "-" << des.handle();
+                }
+            }
         }
-        return;
+
+        break;
     }
-
-    auto service = qobject_cast<QLowEnergyService *>(sender());
-    if (!service)
-        return;
-
-
-
-    //! [les-chars]
-    const QList<QLowEnergyCharacteristic> chars = service->characteristics();
-    for (const QLowEnergyCharacteristic &ch : chars) {
-        auto cInfo = new CharacteristicInfo(ch);
-        m_characteristics.append(cInfo);
+    default:
+        //nothing for now
+        break;
     }
-    //! [les-chars]
 
     emit characteristicsUpdated();
+}
+
+void Device::updateValue(const QLowEnergyCharacteristic &c, const QByteArray &value)
+{
+    if (c.uuid().toString() != m_characteristic)
+        return;
+
+    qDebug() << Q_FUNC_INFO
+             << ", value: " << value.toHex() << "-" << value.size();
+}
+
+void Device::confirmedDescriptorWrite()
+{
+
 }
 
 void Device::deviceScanError(QBluetoothDeviceDiscoveryAgent::Error error)
@@ -397,12 +445,12 @@ void Device::writeMotorA(bool value)
     for (const auto s : m_services) {
         auto sInfo = qobject_cast<ServiceInfo *>(s);
         qDebug() << "sInfo" << sInfo->getUuid();
-        if (sInfo->getUuid() == "00001623-1212-efde-1623-785feabcd123") {
+        if (sInfo->service()->serviceUuid().toString() == m_service) {
             for (const auto m : m_characteristics) {
                 auto cInfo = qobject_cast<CharacteristicInfo *>(m);
                 qDebug() << "cInfo" << cInfo->getUuid();
                 legoABmotor::move(sInfo->service(), cInfo->getCharacteristic(), 5000, 10, 10); //demo_motors_timed
-                //legoCDmotor::rotate(sInfo->service(), cInfo->getCharacteristic(), 720); //demo_port_cd_motor
+                legoCDmotor::rotate(sInfo->service(), cInfo->getCharacteristic(), 720); //demo_port_cd_motor
             }
         }
     }
