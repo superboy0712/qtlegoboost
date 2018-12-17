@@ -111,9 +111,11 @@ void Device::startDeviceDiscovery()
 void Device::addDevice(const QBluetoothDeviceInfo &info)
 {
     if (info.coreConfigurations() & QBluetoothDeviceInfo::LowEnergyCoreConfiguration) {
-        auto d = new DeviceInfo(info);
-        devices.append(d);
-        setUpdate("Last device added: " + d->getName());
+        if (info.name() == "LEGO Move Hub") {
+            auto d = new DeviceInfo(info);
+            devices.append(d);
+            setUpdate("Last device added: " + d->getName());
+        }
     }
 }
 //! [les-devicediscovery-3]
