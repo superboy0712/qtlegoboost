@@ -76,6 +76,8 @@ class Device: public QObject
     Q_PROPERTY(bool useRandomAddress READ isRandomAddress WRITE setRandomAddress NOTIFY randomAddressChanged)
     Q_PROPERTY(bool state READ state NOTIFY stateChanged)
     Q_PROPERTY(bool controllerError READ hasControllerError)
+
+    Q_PROPERTY(bool motorA READ readMotorA WRITE writeMotorA)
 public:
     Device();
     ~Device();
@@ -88,6 +90,10 @@ public:
 
     bool isRandomAddress() const;
     void setRandomAddress(bool newValue);
+
+    // Lego
+    bool readMotorA() const;
+    void writeMotorA(bool value);
 
 public slots:
     void startDeviceDiscovery();
@@ -134,6 +140,9 @@ private:
     QLowEnergyController *controller = nullptr;
     bool m_deviceScanState = false;
     bool randomAddress = false;
+
+    // Lego
+    bool m_motorA = false;
 };
 
 #endif // DEVICE_H

@@ -379,3 +379,29 @@ void Device::setRandomAddress(bool newValue)
     randomAddress = newValue;
     emit randomAddressChanged();
 }
+
+bool Device::readMotorA() const
+{
+    qDebug() << "readMotorA...";
+    return m_motorA;
+}
+
+void Device::writeMotorA(bool value)
+{
+    qDebug() << "writeMotorA...";
+    m_motorA = value;
+    for (const auto s : m_services) {
+        auto sInfo = qobject_cast<ServiceInfo *>(s);
+        qDebug() << "sInfo" << sInfo->getUuid();
+        if (sInfo->getUuid() == "00001623-1212-efde-1623-785feabcd123") {
+            for (const auto m : m_characteristics) {
+                auto cInfo = qobject_cast<CharacteristicInfo *>(m);
+                qDebug() << "cInfo" << cInfo->getUuid();
+                QByteArray writeData = QByteArray::fromHex("0d018139110a88136464647f03"); //demo_motors_timed
+                //QByteArray writeData = QByteArray::fromHex("0e018102110b1400000014647f03"); //demo_port_cd_motor
+
+                sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), writeData);
+            }
+        }
+    }
+}

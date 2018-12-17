@@ -144,6 +144,14 @@ Rectangle {
                 anchors.topMargin: 5
                 anchors.bottomMargin: 5
             }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    console.log("hhhhhh")
+                    device.motorA = true
+                }
+            }
         }
     }
 

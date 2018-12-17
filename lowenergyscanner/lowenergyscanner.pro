@@ -8,7 +8,8 @@ SOURCES += main.cpp \
     device.cpp \
     deviceinfo.cpp \
     serviceinfo.cpp \
-    characteristicinfo.cpp
+    characteristicinfo.cpp \
+    legomotor.cpp
 
 OTHER_FILES += assets/*.qml
 
@@ -16,7 +17,8 @@ HEADERS += \
     device.h \
     deviceinfo.h \
     serviceinfo.h \
-    characteristicinfo.h
+    characteristicinfo.h \
+    legomotor.h
 
 RESOURCES += \
     resources.qrc
