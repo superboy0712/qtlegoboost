@@ -1,6 +1,5 @@
 #include "legoabmotor.h"
 #include "constant.h"
-#include <QtMath>
 #include <QtEndian>
 
 legoABmotor::legoABmotor()
@@ -8,16 +7,6 @@ legoABmotor::legoABmotor()
 
 }
 
-qint8 legoABmotor::speedAbs(qint8 speed)
-{
-    if (speed < -100)
-        speed = -100;
-
-    if (speed > 100)
-        speed = 100;
-
-    return qCeil(speed);
-}
 void legoABmotor::move(QLowEnergyService *service, const QLowEnergyCharacteristic
 &characteristic, quint16 ms, qint8 speed_primary, qint8 speed_secondary)
 {
@@ -34,6 +23,6 @@ void legoABmotor::move(QLowEnergyService *service, const QLowEnergyCharacteristi
             QString("%1").arg(speedAbs(speed_secondary), 2, 16, QLatin1Char('0')).right(2) + \
             LEGO_CONSTANTS::TRAILER;
 
-    qDebug() << "legoMotor::move" << command;
+    qDebug() << "legoABmotor::move" << command;
     control(service, characteristic, QByteArray::fromHex(command.toUtf8()));
 }
