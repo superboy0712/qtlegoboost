@@ -24,7 +24,8 @@ HEADERS += \
     legomotor.h \
     legocolordistancesensor.h \
     legoabmotor.h \
-    legocdmotor.h
+    legocdmotor.h \
+    constant.h
 
 RESOURCES += \
     resources.qrc

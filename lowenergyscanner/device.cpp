@@ -401,9 +401,7 @@ void Device::writeMotorA(bool value)
             for (const auto m : m_characteristics) {
                 auto cInfo = qobject_cast<CharacteristicInfo *>(m);
                 qDebug() << "cInfo" << cInfo->getUuid();
-                legoABmotor::control(sInfo->service(), cInfo->getCharacteristic(), QByteArray::fromHex("0d018139110a88136464647f03")); //demo_motors_timed
-                //legoCDmotor::control(sInfo->service(), cInfo->getCharacteristic(), QByteArray::fromHex("0e018102110b1400000014647f03")); //demo_port_cd_motor
-
+                legoABmotor::move(sInfo->service(), cInfo->getCharacteristic(), 5000, 10, 10); //demo_motors_timed
             }
         }
     }
