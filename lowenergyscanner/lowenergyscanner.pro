@@ -9,7 +9,10 @@ SOURCES += main.cpp \
     deviceinfo.cpp \
     serviceinfo.cpp \
     characteristicinfo.cpp \
-    legomotor.cpp
+    legomotor.cpp \
+    legocolordistancesensor.cpp \
+    legoabmotor.cpp \
+    legocdmotor.cpp
 
 OTHER_FILES += assets/*.qml
 
@@ -18,7 +21,10 @@ HEADERS += \
     deviceinfo.h \
     serviceinfo.h \
     characteristicinfo.h \
-    legomotor.h
+    legomotor.h \
+    legocolordistancesensor.h \
+    legoabmotor.h \
+    legocdmotor.h
 
 RESOURCES += \
     resources.qrc

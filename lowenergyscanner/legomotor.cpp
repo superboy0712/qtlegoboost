@@ -4,8 +4,8 @@ legoMotor::legoMotor()
 {
 }
 
-void move()
+void legoMotor::control(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &command)
 {
-    //QByteArray writeData = QByteArray::fromHex("0d018139110a88136464647f03"); //demo_motors_timed
-    //sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), writeData);
+    qDebug() << "legoMotor::control" << command.toHex();
+    service->writeCharacteristic(characteristic, command);
 }
