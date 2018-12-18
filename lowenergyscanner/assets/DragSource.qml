@@ -55,10 +55,17 @@ Item {
     id: root
     property string colorKey
     width: 64; height: 32
+    Rectangle {
+        anchors.fill: parent
+        color: "green"
+    }
 
     MouseArea {
         id: mouseArea
-
+        Rectangle {
+            anchors.fill: parent
+            color: "yellow"
+        }
         width: root.width; height: root.height
         anchors.centerIn: parent
 
@@ -91,7 +98,6 @@ Item {
 //! [1]
             states: State {
                 when: mouseArea.drag.active
-                ParentChange { target: tile; parent: root }
                 AnchorChanges { target: tile; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
             }
 

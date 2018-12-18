@@ -49,7 +49,7 @@
 ****************************************************************************/
 
 import QtQuick 2.0
-
+import QtQml.Models 2.2
 Rectangle {
     id: root
 
@@ -59,7 +59,7 @@ Rectangle {
 //    color: "black"
 
     Column {
-        id: redSource
+        id: brickSource
 
         anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
         anchors.margins: 3
@@ -75,14 +75,13 @@ Rectangle {
     DropArea {
         id: dragTarget
         anchors.top: parent.top
-        anchors.left: redSource.right
+        anchors.left: brickSource.right
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 3
         property string colorKey: "grey"
         property alias dropProxy: dragTarget
         width: 32; height: 32;
-//        keys: [ "color", "width" ]
 
         Rectangle {
             id: shadowRect
@@ -92,7 +91,11 @@ Rectangle {
             height: 100
             color: "red"
             z : 1
-            anchors.centerIn: parent
+
+            function steppize(val) {
+                return Math.floor(val/20)*20
+            }
+
             states: [
                 State {
                     when: dragTarget.containsDrag
@@ -100,8 +103,15 @@ Rectangle {
                         target: shadowRect
                         visible: true
                         color: "orange"
+                        opacity: 0.4
                         width: dragTarget.drag.source.width
                         height: dragTarget.drag.source.height
+                        x: steppize(dragTarget.drag.source.x)//dragTarget.drag.source.x - width//steppize(mapToItem(dropRectangle, dragTarget.drag.source.x, 0).x)
+                        y: steppize(dragTarget.drag.source.y)//mapY(dragTarget.drag.source)//steppize(mapFromItem(dropRectangle, 0, dragTarget.drag.source.y).y)
+                    }
+                    PropertyChanges {
+                        target: dragTarget.drag.source
+                        parent: dropRectangle
                     }
                 }
             ]
@@ -113,15 +123,6 @@ Rectangle {
             anchors.fill: parent
             color: "grey"
             border.color: "lightsteelblue"
-            states: [
-                State {
-                    when: contains(Qt.point(drag.source.x, drag.source.y))//drag.x + drag.source.width >= dropRectangle.x && drag.x + drag.source.width <= dropRectangle.x + dropRectangle.width
-                    PropertyChanges {
-                        target: dropRectangle
-                        color: "grey"
-                    }
-                }
-            ]
         }
     }
 
