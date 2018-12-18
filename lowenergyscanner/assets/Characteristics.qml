@@ -166,7 +166,7 @@ Rectangle {
                     console.log("motorABMA")
                     console.log("motorAB.active: " + motorAB.active)
                     console.log("motorAB.status: " + motorAB.status)
-                    motorAB.move(5000, 10, 10); //demo_motors_timed
+                    motorAB.move(2000, -100, -100); //demo_motors_timed
                 }
             }
 

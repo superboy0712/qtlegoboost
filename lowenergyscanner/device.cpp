@@ -521,6 +521,10 @@ void Device::colorReading(const QByteArray &value)
         qDebug() << "cyan";
         m_value_color = Qt::cyan;
         break;
+    case 0x09:
+        qDebug() << "cyan";
+        m_value_color = Qt::red;
+        break;
     default:
         break;
     }
