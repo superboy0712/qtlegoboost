@@ -1,10 +1,9 @@
-/***************************************************************************
+/****************************************************************************
 **
-** Copyright (C) 2013 BlackBerry Limited. All rights reserved.
 ** Copyright (C) 2017 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the QtBluetooth module of the Qt Toolkit.
+** This file is part of the examples of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** Commercial License Usage
@@ -49,36 +48,40 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
+import QtQuick 2.0
 
-Item {
-    width: 400
-    height: 800
-    TabBar {
-        id: bar
-        width: parent.width
-        TabButton {
-            text: qsTr("Discover")
-        }
-        TabButton {
-            text: qsTr("PlayGround")
+Rectangle {
+    id: root
+
+    width: 320
+    height: 480
+
+    color: "black"
+
+    Column {
+        id: redSource
+
+        anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
+        anchors.margins: 5
+        width: 64*2
+        spacing: 1
+
+        Repeater {
+            model: 9
+            delegate: DragSource { colorKey: "red" }
         }
     }
+    Column {
+        id: blueSource
 
-    StackLayout {
-        width: parent.width
-        anchors.top: bar.bottom
-        anchors.bottom: parent.bottom
-        currentIndex: bar.currentIndex
-        ConnectPage {
-            id: discoverTab
-        }
-        DnDPage {
-            id: playgroundTab
+        anchors.right: parent.right; anchors.top: parent.top; anchors.bottom: parent.bottom
+        anchors.margins: 5
+        width: 64
+        spacing: -16
+
+        Repeater {
+            model: 9
+            delegate: DragSource { colorKey: "blue" }
         }
     }
 }
-
-

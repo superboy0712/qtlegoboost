@@ -34,3 +34,10 @@ RESOURCES += \
 
 target.path = $$[QT_INSTALL_EXAMPLES]/bluetooth/lowenergyscanner
 INSTALLS += target
+
+DISTFILES += \
+    assets/DragSource.qml \
+    assets/DnDPage.qml \
+    assets/ConnectPage.qml \
+    assets/DragSource.qml \
+    assets/DnDPage.qml

@@ -1,10 +1,9 @@
-/***************************************************************************
+/****************************************************************************
 **
-** Copyright (C) 2013 BlackBerry Limited. All rights reserved.
 ** Copyright (C) 2017 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
-** This file is part of the QtBluetooth module of the Qt Toolkit.
+** This file is part of the examples of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:BSD$
 ** Commercial License Usage
@@ -50,35 +49,54 @@
 ****************************************************************************/
 
 import QtQuick 2.11
-import QtQuick.Controls 2.4
-import QtQuick.Layouts 1.3
 
+//! [0]
 Item {
-    width: 400
-    height: 800
-    TabBar {
-        id: bar
-        width: parent.width
-        TabButton {
-            text: qsTr("Discover")
-        }
-        TabButton {
-            text: qsTr("PlayGround")
-        }
-    }
+    id: root
+    property string colorKey
+    width: 64; height: 32
 
-    StackLayout {
-        width: parent.width
-        anchors.top: bar.bottom
-        anchors.bottom: parent.bottom
-        currentIndex: bar.currentIndex
-        ConnectPage {
-            id: discoverTab
-        }
-        DnDPage {
-            id: playgroundTab
+    MouseArea {
+        id: mouseArea
+
+        width: root.width; height: root.height
+        anchors.centerIn: parent
+
+        drag.target: tile
+
+        onReleased: parent = tile.Drag.target !== null ? tile.Drag.target : root
+
+        Rectangle {
+            id: tile
+
+            width: root.width; height: root.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+
+            color: colorKey
+            border.color: "grey"
+            Drag.keys: [ colorKey ]
+            Drag.active: mouseArea.drag.active
+            Drag.hotSpot.x: 0
+            Drag.hotSpot.y: 0
+//! [0]
+            Text {
+                anchors.fill: parent
+                color: "white"
+                font.pixelSize: 48
+                text: modelData + 1
+                horizontalAlignment:Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+//! [1]
+            states: State {
+                when: mouseArea.drag.active
+                ParentChange { target: tile; parent: root }
+                AnchorChanges { target: tile; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
+            }
+
         }
     }
 }
-
+//! [1]
 
