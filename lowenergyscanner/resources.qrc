@@ -11,5 +11,6 @@
         <file>assets/DnDPage.qml</file>
         <file>assets/ConnectPage.qml</file>
         <file>assets/DragSource.qml</file>
+        <file>assets/ShadowRect.qml</file>
     </qresource>
 </RCC>

@@ -56,6 +56,7 @@ Item {
     property string colorKey
     width: 64; height: 32
     Rectangle {
+        id: sourceAnchor
         anchors.fill: parent
         color: "green"
     }
@@ -63,22 +64,43 @@ Item {
     MouseArea {
         id: mouseArea
         Rectangle {
+            id: maRect
             anchors.fill: parent
             color: "yellow"
         }
         width: root.width; height: root.height
-        anchors.centerIn: parent
-
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
         drag.target: tile
 
-        onReleased: parent = tile.Drag.target !== null ? tile.Drag.target : root
+        onReleased: {
+            parent = tile.Drag.target !== null ? tile.Drag.target : root
+            console.log(sr.x , sr.y)
+            mouseArea.x = sr.x
+            mouseArea.y = sr.y
+        }
+
+        Binding on anchors.verticalCenter {
+            when: parent !== root
+            value: undefined
+        }
+
+        Binding on anchors.horizontalCenter {
+            when: parent !== root
+            value: undefined
+        }
+
+//        states: State {
+//            when: parent !== root && !mouseArea.drag.active
+//            AnchorChanges { target: mouseArea; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined; }
+//        }
 
         Rectangle {
             id: tile
 
             width: root.width; height: root.height
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: mouseArea.verticalCenter
+            anchors.horizontalCenter: mouseArea.horizontalCenter
 
             color: colorKey
             border.color: "grey"

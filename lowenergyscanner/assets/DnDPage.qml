@@ -72,6 +72,11 @@ Rectangle {
         }
     }
 
+    ShadowRect {
+        id: sr
+        dropTarget: dragTarget
+    }
+
     DropArea {
         id: dragTarget
         anchors.top: parent.top
@@ -79,43 +84,8 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.right: parent.right
         anchors.margins: 3
-        property string colorKey: "grey"
-        property alias dropProxy: dragTarget
         width: 32; height: 32;
 
-        Rectangle {
-            id: shadowRect
-            // used as the valid drop position indicator
-            visible: false
-            width: 100
-            height: 100
-            color: "red"
-            z : 1
-
-            function steppize(val) {
-                return Math.floor(val/20)*20
-            }
-
-            states: [
-                State {
-                    when: dragTarget.containsDrag
-                    PropertyChanges {
-                        target: shadowRect
-                        visible: true
-                        color: "orange"
-                        opacity: 0.4
-                        width: dragTarget.drag.source.width
-                        height: dragTarget.drag.source.height
-                        x: steppize(dragTarget.drag.source.x)//dragTarget.drag.source.x - width//steppize(mapToItem(dropRectangle, dragTarget.drag.source.x, 0).x)
-                        y: steppize(dragTarget.drag.source.y)//mapY(dragTarget.drag.source)//steppize(mapFromItem(dropRectangle, 0, dragTarget.drag.source.y).y)
-                    }
-                    PropertyChanges {
-                        target: dragTarget.drag.source
-                        parent: dropRectangle
-                    }
-                }
-            ]
-        }
 
         Rectangle {
             id: dropRectangle
@@ -124,6 +94,7 @@ Rectangle {
             color: "grey"
             border.color: "lightsteelblue"
         }
+
     }
 
 }
