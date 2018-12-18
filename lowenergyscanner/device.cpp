@@ -339,7 +339,23 @@ void Device::readVoltage(bool r)
             }
         }
     }
+}
 
+void Device::readDistance(bool r)
+{
+    for (const auto s : m_services) {
+        auto sInfo = qobject_cast<ServiceInfo *>(s);
+        if (sInfo->service()->serviceUuid().toString() == m_service) {
+            for (const auto m : m_characteristics) {
+                auto cInfo = qobject_cast<CharacteristicInfo *>(m);
+                if (r) {
+                    sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), QByteArray::fromHex("0a014102080100000001"));
+                } else {
+                    sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), QByteArray::fromHex("0a014102080000000000"));
+                }
+            }
+        }
+    }
 }
 
 void Device::deviceDisconnected()
@@ -437,10 +453,19 @@ void Device::confirmedDescriptorWrite()
 void Device::acknowledgement(const QByteArray &value)
 {
     uint portType = (uint)value.at(3);
+    uint deviceType = (uint)value.at(5);
     switch (portType) {
     case PortVoltage:
         qDebug() << "Voltage subscription acknowledged";
         break;
+    case PortD:
+        switch (deviceType) {
+        case DeviceDCSensor:
+            qDebug() << "DCSensor subscription acknowledged";
+            break;
+        default:
+            break;
+        }
     default:
         break;
     }
@@ -458,12 +483,61 @@ void Device::voltageReading(const QByteArray &value)
     emit valueVoltageChanged();
 }
 
+void Device::distanceReading(const QByteArray &value)
+{
+    uint val = (unsigned char)value.at(4) * 256 + (unsigned char)value.at(5);
+
+//    qDebug() << "val: " << val;
+
+    m_value_voltage = val / 4096.0;
+//    qDebug() << "Voltage value: " << m_value_voltage;
+
+    emit valueDistanceChanged();
+}
+
+void Device::colorReading(const QByteArray &value)
+{
+    uint val = (unsigned char)value.at(4);
+
+    qDebug() << "val: " << val;
+
+    if (val == 255)
+        return;
+
+    switch (val) {
+    case 0x00:
+        qDebug() << "black";
+        m_value_color = Qt::black;
+        break;
+    case 0x03:
+        qDebug() << "blue";
+        m_value_color = Qt::blue;
+        break;
+    case 0x0a:
+        qDebug() << "white";
+        m_value_color = Qt::white;
+        break;
+    case 0x02:
+        qDebug() << "cyan";
+        m_value_color = Qt::cyan;
+        break;
+    default:
+        break;
+    }
+
+    emit valueColorChanged();
+}
+
 void Device::sensorReading(const QByteArray &value)
 {
     uint portType = (uint)value.at(3);
     switch (portType) {
     case PortVoltage:
         voltageReading(value);
+        break;
+    case PortD:
+        distanceReading(value);
+        colorReading(value);
         break;
     default:
         break;
@@ -486,11 +560,10 @@ void Device::portInformation(const QByteArray &value)
         break;
     case PortC:
         m_device_motorC = online;
-        qDebug() << "motorc: " << online;
         break;
     case PortD:
         m_device_dcsensor = online;
-        qDebug() << "dcsensor: " << online;
+        emit deviceDCSensorChanged();
         break;
     default:
         break;
@@ -559,4 +632,19 @@ bool Device::deviceVoltage() const
 double Device::valueVoltage() const
 {
     return m_value_voltage;
+}
+
+bool Device::deviceDCSensor() const
+{
+    return m_device_dcsensor;
+}
+
+double Device::valueDistance() const
+{
+    return m_value_distance;
+}
+
+QColor Device::valueColor() const
+{
+    return m_value_color;
 }

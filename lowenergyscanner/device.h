@@ -53,6 +53,7 @@
 
 #include <qbluetoothlocaldevice.h>
 #include <QObject>
+#include <QColor>
 #include <QVariant>
 #include <QList>
 #include <QBluetoothServiceDiscoveryAgent>
@@ -80,6 +81,9 @@ class Device: public QObject
 
     Q_PROPERTY(bool deviceVoltage READ deviceVoltage NOTIFY deviceVoltageChanged)
     Q_PROPERTY(double valueVoltage READ valueVoltage NOTIFY valueVoltageChanged)
+    Q_PROPERTY(bool deviceDCSensor READ deviceDCSensor NOTIFY deviceDCSensorChanged)
+    Q_PROPERTY(double valueDistance READ valueDistance NOTIFY valueDistanceChanged)
+    Q_PROPERTY(QColor valueColor READ valueColor NOTIFY valueColorChanged)
 
     // https://github.com/JorgePe/BOOSTreveng/blob/master/Notifications.md
     enum MessageType {
@@ -141,6 +145,10 @@ public:
     bool deviceVoltage() const;
     double valueVoltage() const;
 
+    bool deviceDCSensor() const;
+    double valueDistance() const;
+    QColor valueColor() const;
+
 public slots:
     void startDeviceDiscovery();
     void scanServices(const QString &address);
@@ -149,6 +157,7 @@ public slots:
     void disconnectFromDevice();
 
     void readVoltage(bool r);
+    void readDistance(bool r);
 
 private slots:
     // QBluetoothDeviceDiscoveryAgent related
@@ -174,6 +183,8 @@ private:
     void acknowledgement(const QByteArray &value);
     void sensorReading(const QByteArray &value);
     void voltageReading(const QByteArray &value);
+    void distanceReading(const QByteArray &value);
+    void colorReading(const QByteArray &value);
 
 Q_SIGNALS:
     void devicesUpdated();
@@ -186,6 +197,10 @@ Q_SIGNALS:
 
     void deviceVoltageChanged();
     void valueVoltageChanged();
+
+    void deviceDCSensorChanged();
+    void valueDistanceChanged();
+    void valueColorChanged();
 
 private:
     void setUpdate(const QString &message);
@@ -211,6 +226,8 @@ private:
     bool m_device_dcsensor = false;
 
     double m_value_voltage = 0.0;
+    double m_value_distance = 0.0;
+    QColor m_value_color;
 };
 
 #endif // DEVICE_H

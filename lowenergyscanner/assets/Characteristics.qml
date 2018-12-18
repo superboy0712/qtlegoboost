@@ -74,6 +74,7 @@ Rectangle {
         clip: true
 
         property bool readV: false
+        property bool readD: false
 
         anchors.top: header.bottom
         anchors.bottom: menu.top
@@ -83,7 +84,7 @@ Rectangle {
             id: characteristicbox
             height:300
             width: parent.width
-            color: "lightsteelblue"
+            color: device.valueColor
             border.width: 2
             border.color: "black"
             radius: 5
@@ -139,6 +140,19 @@ Rectangle {
                     console.log("voltageMA")
                     characteristicview.readV = !characteristicview.readV
                     device.readVoltage(characteristicview.readV)
+                }
+            }
+
+            MouseArea {
+                id: distanceMA
+                anchors.right: parent.right
+                anchors.top: parent.top
+                width: 20
+                height: 20
+                onClicked: {
+                    console.log("distanceMA")
+                    characteristicview.readD = !characteristicview.readD
+                    device.readDistance(characteristicview.readD)
                 }
             }
 
