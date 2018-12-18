@@ -62,92 +62,23 @@ Item {
         opacity: 0.4
     }
 
-    MouseArea {
-        id: mouseArea
-        Rectangle {
-            id: maRect
-            anchors.fill: parent
-            color: "lightsteelblue"
-            opacity: 0.3
-        }
-        width: root.width; height: root.height
+    Component {
+        id: brick
+        Brick {}
+    }
 
-        drag.target: tile
-        onReleased: {
-            if(mouse.button & Qt.LeftButton) {
-                console.log(sr.x , sr.y, "vs: ", mouseArea.x, mouseArea.y)
-                parent = tile.Drag.target !== null ? tile.Drag.target : root
-                if (tile.Drag.target === null) print("nulllll")
-                mouseArea.x = sr.x
-                mouseArea.y = sr.y
-                console.log("after: ", sr.x , sr.y, "vs: ", mouseArea.x, mouseArea.y)
-            }
-        }
+    Brick {
 
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
+    }
 
-        onDoubleClicked: {
-            console.log("double clicked to delete:", index)
-            if(mouse.button & Qt.RightButton) {
-                if (root.children.length > 3) {
-                    tile.destroy()
-                    mouseArea.destroy()
-                } else {
-                    parent = root
-                    x = sourceAnchor.x
-                    y = sourceAnchor.y
-                }
-            }
-        }
+    Brick {
 
-        Binding on anchors.verticalCenter {
-            when: parent !== root
-            value: undefined
-        }
+    }
 
-        Binding on anchors.verticalCenter {
-            when: parent === root
-            value: root.verticalCenter
-        }
-
-        Binding on anchors.horizontalCenter {
-            when: parent !== root
-            value: undefined
-        }
-
-        Binding on anchors.horizontalCenter {
-            when: parent === root
-            value: root.horizontalCenter
-        }
-
-        Rectangle {
-            id: tile
-
-            width: root.width; height: root.height
-            anchors.verticalCenter: mouseArea.verticalCenter
-            anchors.horizontalCenter: mouseArea.horizontalCenter
-
-            color: colorKey
-            border.color: "grey"
-            Drag.keys: [ colorKey ]
-            Drag.active: mouseArea.drag.active
-            Drag.hotSpot.x: 0
-            Drag.hotSpot.y: 0
-//! [0]
-            Text {
-                anchors.fill: parent
-                color: "white"
-                font.pixelSize: 24
-                text: modelData + 1
-                horizontalAlignment:Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
-//! [1]
-            states: State {
-                when: mouseArea.drag.active
-                AnchorChanges { target: tile; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
-            }
-
+    onChildrenChanged: {
+        print("length: ", root.children.length)
+        if (root.children.length < 3) {
+            brick.createObject(root)
         }
     }
 }

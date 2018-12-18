@@ -12,5 +12,6 @@
         <file>assets/ConnectPage.qml</file>
         <file>assets/DragSource.qml</file>
         <file>assets/ShadowRect.qml</file>
+        <file>assets/Brick.qml</file>
     </qresource>
 </RCC>
