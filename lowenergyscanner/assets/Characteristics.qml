@@ -151,9 +151,21 @@ Rectangle {
                 onClicked: {
                     console.log("motorABMA")
                     motorAB.move(5000, 10, 10); //demo_motors_timed
+                }
+            }
+
+            MouseArea {
+                id: motorCDMA
+                anchors.right: parent.right
+                anchors.bottom: parent.bottom
+                width: 20
+                height: 20
+                onClicked: {
+                    console.log("motorCDMA")
                     motorCD.rotate(720); //demo_port_cd_motor
                 }
             }
+
         }
     }
 
