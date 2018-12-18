@@ -56,8 +56,6 @@ Rectangle {
     width: 320
     height: 480
 
-//    color: "black"
-
     Column {
         id: brickSource
 
@@ -68,7 +66,7 @@ Rectangle {
 
         Repeater {
             model: 9
-            delegate: DragSource { colorKey: "lightblue" }
+            delegate: DragSource { text: "Dummy Brick"; colorKey: "lightblue" }
         }
     }
 

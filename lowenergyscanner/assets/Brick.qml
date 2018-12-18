@@ -20,7 +20,6 @@ MouseArea {
         opacity: 0.3
     }
     width: root.width; height: root.height
-
     drag.target: tile
     onReleased: {
         if(mouse.button & Qt.LeftButton) {
@@ -37,7 +36,13 @@ MouseArea {
             console.log("double clicked to delete:", index, objectName)
             destroyOrReset()
         }
+
+        if(mouse.button & Qt.LeftButton) {
+            console.log("double clicked to Run Code!:", index, objectName)
+            root.payLoad()
+        }
     }
+
 
     Binding on anchors.verticalCenter {
         when: parent !== root
@@ -77,7 +82,7 @@ MouseArea {
             anchors.fill: parent
             color: "white"
             font.pixelSize: 24
-            text: modelData + 1
+            text: root.text + " " + modelData
             horizontalAlignment:Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -85,6 +90,16 @@ MouseArea {
         states: State {
             when: mouseArea.drag.active
             AnchorChanges { target: tile; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
+        }
+
+        Binding on z {
+            when: Drag.active
+            value: parent.z + 2
+        }
+
+        Binding on z {
+            when: !Drag.active
+            value: parent.z
         }
 
     }

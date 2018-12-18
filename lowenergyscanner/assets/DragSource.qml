@@ -54,7 +54,9 @@ import QtQuick 2.11
 Item {
     id: root
     property string colorKey
-    width: 64; height: 32
+    property string text
+    property var payLoad: function () { print("yooyo")}
+    width: 192; height: 32
     Rectangle {
         id: sourceAnchor
         anchors.fill: parent
