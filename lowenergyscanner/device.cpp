@@ -420,7 +420,7 @@ void Device::updateValue(const QLowEnergyCharacteristic &c, const QByteArray &va
     if (c.uuid().toString() != m_characteristic)
         return;
 
-    uint len = (uint)value.at(0);
+    unsigned char len = (unsigned char)value.at(0);
     qDebug() << Q_FUNC_INFO
              << ", value: " << value.toHex() << "-" << value.size() << "-" << len;
 
@@ -429,7 +429,7 @@ void Device::updateValue(const QLowEnergyCharacteristic &c, const QByteArray &va
         return;
     }
 
-    uint msgType = (uint)value.at(2);
+    unsigned char msgType = (unsigned char)value.at(2);
     switch (msgType) {
     case PortInformation:
         portInformation(value);
@@ -439,6 +439,9 @@ void Device::updateValue(const QLowEnergyCharacteristic &c, const QByteArray &va
         break;
     case SensorReading:
         sensorReading(value);
+        break;
+    case PortChanged:
+        portChanged(value);
         break;
     default:
         break;
@@ -452,20 +455,67 @@ void Device::confirmedDescriptorWrite()
 
 void Device::acknowledgement(const QByteArray &value)
 {
-    uint portType = (uint)value.at(3);
-    uint deviceType = (uint)value.at(5);
+    unsigned char portType = (unsigned char)value.at(3);
+    unsigned char deviceEvent = (unsigned char)value.at(5);
+    qDebug() << "deviceEvent: " << deviceEvent;
+    bool online = (deviceEvent != 0);
+
     switch (portType) {
     case PortVoltage:
-        qDebug() << "Voltage subscription acknowledged";
+        qDebug() << "Voltage subscription acknowledged"
+                 << ", m_busy: " << m_busy
+                 << ", online: " << online;
+        if (!m_busy && online) {
+            m_busy = true;
+            emit busyChanged();
+        } else if (m_busy && !online) {
+            m_busy = false;
+            emit busyChanged();
+        }
         break;
     case PortD:
-        switch (deviceType) {
-        case DeviceDCSensor:
-            qDebug() << "DCSensor subscription acknowledged";
-            break;
-        default:
-            break;
+        qDebug() << "DCSensor subscription acknowledged"
+                 << ", m_busy: " << m_busy
+                 << ", online: " << online;
+        if (!m_busy && online) {
+            m_busy = true;
+            emit busyChanged();
+        } else if (m_busy && !online) {
+            m_busy = false;
+            emit busyChanged();
         }
+        break;
+    default:
+        break;
+    }
+}
+
+void Device::portChanged(const QByteArray &value)
+{
+    unsigned char portType = (unsigned char)value.at(3);
+    unsigned char deviceEvent = (unsigned char)value.at(4);
+
+    switch (portType) {
+    case PortAB:
+        qDebug() << "PortAB status " << deviceEvent;
+        if (!m_busy && deviceEvent == 1) {
+            m_busy = true;
+            emit busyChanged();
+        } else if (m_busy && deviceEvent == 10) {
+            m_busy = false;
+            emit busyChanged();
+        }
+        break;
+    case PortC:
+        qDebug() << "PortC status " << deviceEvent;
+        if (!m_busy && deviceEvent == 1) {
+            m_busy = true;
+            emit busyChanged();
+        } else if (m_busy && deviceEvent == 10) {
+            m_busy = false;
+            emit busyChanged();
+        }
+        break;
     default:
         break;
     }
@@ -475,10 +525,10 @@ void Device::voltageReading(const QByteArray &value)
 {
     uint val = (unsigned char)value.at(4) * 256 + (unsigned char)value.at(5);
 
-    qDebug() << "val: " << val;
+//    qDebug() << "val: " << val;
 
     m_value_voltage = val / 4096.0;
-    qDebug() << "Voltage value: " << m_value_voltage;
+//    qDebug() << "Voltage value: " << m_value_voltage;
 
     emit valueVoltageChanged();
 }
@@ -497,7 +547,7 @@ void Device::distanceReading(const QByteArray &value)
 
 void Device::colorReading(const QByteArray &value)
 {
-    uint val = (unsigned char)value.at(4);
+    unsigned char val = (unsigned char)value.at(4);
 
     qDebug() << "val: " << val;
 
@@ -522,7 +572,7 @@ void Device::colorReading(const QByteArray &value)
         m_value_color = Qt::cyan;
         break;
     case 0x09:
-        qDebug() << "cyan";
+        qDebug() << "red";
         m_value_color = Qt::red;
         break;
     default:
@@ -534,7 +584,7 @@ void Device::colorReading(const QByteArray &value)
 
 void Device::sensorReading(const QByteArray &value)
 {
-    uint portType = (uint)value.at(3);
+    unsigned char portType = (unsigned char)value.at(3);
     switch (portType) {
     case PortVoltage:
         voltageReading(value);
@@ -550,8 +600,8 @@ void Device::sensorReading(const QByteArray &value)
 
 void Device::portInformation(const QByteArray &value)
 {
-    uint portType = (uint)value.at(3);
-    uint deviceEvent = (uint)value.at(4);
+    unsigned char portType = (unsigned char)value.at(3);
+    unsigned char deviceEvent = (unsigned char)value.at(4);
     bool online = (deviceEvent != 0);
 
     switch (portType) {
@@ -626,6 +676,11 @@ void Device::sendCommand(const QByteArray &command)
             }
         }
     }
+}
+
+bool Device::busy() const
+{
+    return m_busy;
 }
 
 bool Device::deviceVoltage() const

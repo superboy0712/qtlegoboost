@@ -79,6 +79,7 @@ class Device: public QObject
     Q_PROPERTY(bool state READ state NOTIFY stateChanged)
     Q_PROPERTY(bool controllerError READ hasControllerError)
 
+    Q_PROPERTY(bool busy READ busy NOTIFY busyChanged)
     Q_PROPERTY(bool deviceVoltage READ deviceVoltage NOTIFY deviceVoltageChanged)
     Q_PROPERTY(double valueVoltage READ valueVoltage NOTIFY valueVoltageChanged)
     Q_PROPERTY(bool deviceDCSensor READ deviceDCSensor NOTIFY deviceDCSensorChanged)
@@ -95,7 +96,7 @@ class Device: public QObject
         Subscription = 0x41,
         SensorReading = 0x45,
         Acknowledgement = 0x47, //for Subscription
-        PortChanged = 0x82
+        PortChanged = 0x82 //motor started/stopped/inbetween
     };
 
     enum PortType {
@@ -142,6 +143,8 @@ public:
     // Lego
     void sendCommand(const QByteArray &command);
 
+    bool busy() const;
+
     bool deviceVoltage() const;
     double valueVoltage() const;
 
@@ -181,6 +184,7 @@ private slots:
 private:
     void portInformation(const QByteArray &value);
     void acknowledgement(const QByteArray &value);
+    void portChanged(const QByteArray &value);
     void sensorReading(const QByteArray &value);
     void voltageReading(const QByteArray &value);
     void distanceReading(const QByteArray &value);
@@ -194,6 +198,8 @@ Q_SIGNALS:
     void stateChanged();
     void disconnected();
     void randomAddressChanged();
+
+    void busyChanged();
 
     void deviceVoltageChanged();
     void valueVoltageChanged();
@@ -219,6 +225,8 @@ private:
     QLowEnergyController *controller = nullptr;
     bool m_deviceScanState = false;
     bool randomAddress = false;
+
+    bool m_busy = false;
 
     bool m_device_motorAB = false;
     bool m_device_motorC = false; // external
