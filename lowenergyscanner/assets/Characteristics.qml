@@ -150,6 +150,8 @@ Rectangle {
                 height: 20
                 onClicked: {
                     console.log("motorABMA")
+                    console.log("motorAB.active: " + motorAB.active)
+                    console.log("motorAB.status: " + motorAB.status)
                     motorAB.move(5000, 10, 10); //demo_motors_timed
                 }
             }
@@ -162,6 +164,8 @@ Rectangle {
                 height: 20
                 onClicked: {
                     console.log("motorCDMA")
+                    console.log("motorCD.active: " + motorCD.active)
+                    console.log("motorCD.status: " + motorCD.status)
                     motorCD.rotate(720); //demo_port_cd_motor
                 }
             }
