@@ -1,7 +1,7 @@
 #include "legomotor.h"
 #include <QtMath>
 
-legoMotor::legoMotor()
+legoMotor::legoMotor(Device *d) : legoControl(d)
 {
 }
 

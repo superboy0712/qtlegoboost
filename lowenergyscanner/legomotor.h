@@ -6,7 +6,7 @@
 class legoMotor : public legoControl
 {
 public:
-    legoMotor();
+    explicit legoMotor(Device *d);
     static qint8 speedAbs(qint8 speed);
 };
 

@@ -1,11 +1,14 @@
 #ifndef LEGOCOLORDISTANCESENSOR_H
 #define LEGOCOLORDISTANCESENSOR_H
 
+#include <legocontrol.h>
 
-class legoColorDistanceSensor
+class legoColorDistanceSensor : public legoControl
 {
+    Q_OBJECT
+
 public:
-    legoColorDistanceSensor();
+    explicit legoColorDistanceSensor(Device *d);
 };
 
 #endif // LEGOCOLORDISTANCESENSOR_H

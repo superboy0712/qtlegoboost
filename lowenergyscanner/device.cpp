@@ -432,16 +432,9 @@ void Device::setRandomAddress(bool newValue)
     emit randomAddressChanged();
 }
 
-bool Device::readMotorA() const
+void Device::sendCommand(const QByteArray &command)
 {
-    qDebug() << "readMotorA...";
-    return m_motorA;
-}
-
-void Device::writeMotorA(bool value)
-{
-    qDebug() << "writeMotorA...";
-    m_motorA = value;
+    qDebug() << "Device::sendCommand...";
     for (const auto s : m_services) {
         auto sInfo = qobject_cast<ServiceInfo *>(s);
         qDebug() << "sInfo" << sInfo->getUuid();
@@ -449,8 +442,7 @@ void Device::writeMotorA(bool value)
             for (const auto m : m_characteristics) {
                 auto cInfo = qobject_cast<CharacteristicInfo *>(m);
                 qDebug() << "cInfo" << cInfo->getUuid();
-                legoABmotor::move(sInfo->service(), cInfo->getCharacteristic(), 5000, 10, 10); //demo_motors_timed
-                legoCDmotor::rotate(sInfo->service(), cInfo->getCharacteristic(), 720); //demo_port_cd_motor
+                sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), command);
             }
         }
     }

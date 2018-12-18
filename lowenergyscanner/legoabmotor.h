@@ -5,9 +5,11 @@
 
 class legoABmotor : public legoMotor
 {
+    Q_OBJECT
+
 public:
-    legoABmotor();
-    static void move(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, quint16 ms = 1000, qint8 speed_primary = 100, qint8 speed_secondary = 100);
+    explicit legoABmotor(Device *d);
+    Q_INVOKABLE void move(quint16 ms = 1000, qint8 speed_primary = 100, qint8 speed_secondary = 100);
 };
 
 #endif // LEGOABMOTOR_H

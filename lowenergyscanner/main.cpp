@@ -54,6 +54,8 @@
 #include <QGuiApplication>
 #include <QQuickView>
 #include "device.h"
+#include "legoabmotor.h"
+#include "legocdmotor.h"
 
 
 int main(int argc, char *argv[])
@@ -64,6 +66,12 @@ int main(int argc, char *argv[])
     Device d;
     auto view = new QQuickView;
     view->rootContext()->setContextProperty("device", &d);
+
+    legoABmotor motorAB(&d);
+    view->rootContext()->setContextProperty("motorAB", &motorAB);
+
+    legoCDmotor motorCD(&d);
+    view->rootContext()->setContextProperty("motorCD", &motorCD);
 
     view->setSource(QUrl("qrc:/assets/main.qml"));
     view->setResizeMode(QQuickView::SizeRootObjectToView);

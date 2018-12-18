@@ -1,20 +1,17 @@
 #include "legocontrol.h"
 
-bool legoControl::active = true;
-bool legoControl::status = false;
-
-legoControl::legoControl()
+legoControl::legoControl(Device *d) : device(d)
 {
 
 }
 
-void legoControl::control(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &command)
+void legoControl::control(const QByteArray &command)
 {
-    if (active) {
+    if (active && device) {
         qDebug() << "legoControl::control" << command.toHex();
-        service->writeCharacteristic(characteristic, command);
+        device->sendCommand(command);
     } else {
-        qWarning() << "legoControl::control non-Active";
+        qWarning() << "legoControl::control fail!";
     }
 }
 

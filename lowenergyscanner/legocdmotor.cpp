@@ -3,13 +3,12 @@
 #include <QtMath>
 #include <QtEndian>
 
-legoCDmotor::legoCDmotor()
+legoCDmotor::legoCDmotor(Device *d) : legoMotor(d)
 {
 
 }
 
-void legoCDmotor::rotate(QLowEnergyService *service, const QLowEnergyCharacteristic
-&characteristic, qint32 angle, qint8 speed_primary, MORTOR_PORT port)
+void legoCDmotor::rotate(qint32 angle, qint8 speed_primary, MORTOR_PORT port)
 {
     const QString length = "0e";
 
@@ -35,5 +34,5 @@ void legoCDmotor::rotate(QLowEnergyService *service, const QLowEnergyCharacteris
             LEGO_CONSTANTS::TRAILER;
 
     qDebug() << "legoCDmotor::rotate" << command;
-    control(service, characteristic, QByteArray::fromHex(command.toUtf8()));
+    control(QByteArray::fromHex(command.toUtf8()));
 }

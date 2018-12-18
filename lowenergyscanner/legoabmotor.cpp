@@ -2,13 +2,12 @@
 #include "constant.h"
 #include <QtEndian>
 
-legoABmotor::legoABmotor()
+legoABmotor::legoABmotor(Device *d) : legoMotor(d)
 {
 
 }
 
-void legoABmotor::move(QLowEnergyService *service, const QLowEnergyCharacteristic
-&characteristic, quint16 ms, qint8 speed_primary, qint8 speed_secondary)
+void legoABmotor::move(quint16 ms, qint8 speed_primary, qint8 speed_secondary)
 {
     const QString length = "0d";
     QString command =
@@ -24,5 +23,5 @@ void legoABmotor::move(QLowEnergyService *service, const QLowEnergyCharacteristi
             LEGO_CONSTANTS::TRAILER;
 
     qDebug() << "legoABmotor::move" << command;
-    control(service, characteristic, QByteArray::fromHex(command.toUtf8()));
+    control(QByteArray::fromHex(command.toUtf8()));
 }

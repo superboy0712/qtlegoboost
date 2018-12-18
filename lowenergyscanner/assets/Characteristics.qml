@@ -130,8 +130,8 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    console.log("hhhhhh")
-                    device.motorA = true
+                    motorAB.move(5000, 10, 10); //demo_motors_timed
+                    motorCD.rotate(720); //demo_port_cd_motor
                 }
             }
         }

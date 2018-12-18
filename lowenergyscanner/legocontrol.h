@@ -3,24 +3,26 @@
 
 #include <QLowEnergyController>
 #include <QBluetoothServiceInfo>
-
 #include <QObject>
+
+#include <device.h>
 
 class legoControl : public QObject
 {
     Q_OBJECT
 
 public:
-    legoControl();
-    static void control(QLowEnergyService *service, const QLowEnergyCharacteristic &characteristic, const QByteArray &command);
+    explicit legoControl(Device *d);
+    void control(const QByteArray &command);
 
 public slots:
     void setActive(int value);
     void setStatus(int value);
 
 private:
-    static bool active;
-    static bool status;
+    Device *device = nullptr;
+    bool active = true;
+    bool status = false;
 };
 
 #endif // LEGOCONTROL_H
