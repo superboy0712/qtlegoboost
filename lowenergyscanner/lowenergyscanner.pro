@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     legomotor.cpp \
     legocolordistancesensor.cpp \
     legoabmotor.cpp \
-    legocdmotor.cpp
+    legocdmotor.cpp \
+    legocontrol.cpp
 
 OTHER_FILES += assets/*.qml
 
@@ -25,7 +26,8 @@ HEADERS += \
     legocolordistancesensor.h \
     legoabmotor.h \
     legocdmotor.h \
-    constant.h
+    constant.h \
+    legocontrol.h
 
 RESOURCES += \
     resources.qrc
