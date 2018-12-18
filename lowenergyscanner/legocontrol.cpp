@@ -20,10 +20,12 @@ void legoControl::control(QLowEnergyService *service, const QLowEnergyCharacteri
 
 void legoControl::setActive(int value)
 {
+    qDebug() << "legoControl::setActive" << value;
     active = value;
 }
 
 void legoControl::setStatus(int value)
 {
+    qDebug() << "legoControl::setStatus" << value;
     status = value;
 }
