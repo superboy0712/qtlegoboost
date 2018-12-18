@@ -69,6 +69,7 @@ QT_FORWARD_DECLARE_CLASS (QBluetoothServiceInfo)
 class Device: public QObject
 {
     Q_OBJECT
+
     Q_PROPERTY(QVariant devicesList READ getDevices NOTIFY devicesUpdated)
     Q_PROPERTY(QVariant servicesList READ getServices NOTIFY servicesUpdated)
     Q_PROPERTY(QVariant characteristicList READ getCharacteristics NOTIFY characteristicsUpdated)
@@ -76,6 +77,51 @@ class Device: public QObject
     Q_PROPERTY(bool useRandomAddress READ isRandomAddress WRITE setRandomAddress NOTIFY randomAddressChanged)
     Q_PROPERTY(bool state READ state NOTIFY stateChanged)
     Q_PROPERTY(bool controllerError READ hasControllerError)
+
+    Q_PROPERTY(bool deviceVoltage READ deviceVoltage NOTIFY deviceVoltageChanged)
+    Q_PROPERTY(double valueVoltage READ valueVoltage NOTIFY valueVoltageChanged)
+
+    // https://github.com/JorgePe/BOOSTreveng/blob/master/Notifications.md
+    enum MessageType {
+        DeviceInformation = 0x01,
+        DeviceShutdown = 0x02,
+        PingPong = 0x03, //perhaps
+        PortInformation = 0x04,
+        ErrorOrMalformed = 0x05,
+        Subscription = 0x41,
+        SensorReading = 0x45,
+        Acknowledgement = 0x47, //for Subscription
+        PortChanged = 0x82
+    };
+
+    enum PortType {
+        PortC = 0x01,
+        PortD = 0x02,
+        PortLED = 0x32,
+        PortA = 0x37, //fixed motor
+        PortB = 0x38, //fixed motor
+        PortAB = 0x39, //fixed motors
+        PortTiltSensor = 0x3a,
+        PortAmperage = 0x3b,
+        PortVoltage = 0x3c
+    };
+
+    enum DeviceType {
+        DeviceVoltage = 0x14,
+        DeviceAmperage = 0x15,
+        DeviceLED = 0x17,
+        DeviceDCSensor = 0x25, // Distance and Color
+        DeviceInternalMotor = 0x26,
+        DeviceExternalMotor = 0x27,
+        DeviceTiltSensor = 0x28
+    };
+
+    enum DeviceEvent {
+        None = 0x0, // detached
+        Single = 0x01,
+        Group = 0x02
+    };
+
 public:
     Device();
     ~Device();
@@ -92,12 +138,17 @@ public:
     // Lego
     void sendCommand(const QByteArray &command);
 
+    bool deviceVoltage() const;
+    double valueVoltage() const;
+
 public slots:
     void startDeviceDiscovery();
     void scanServices(const QString &address);
 
     void connectToService(const QString &uuid);
     void disconnectFromDevice();
+
+    void readVoltage(bool r);
 
 private slots:
     // QBluetoothDeviceDiscoveryAgent related
@@ -118,6 +169,12 @@ private slots:
     void updateValue(const QLowEnergyCharacteristic &c, const QByteArray &value);
     void confirmedDescriptorWrite();
 
+private:
+    void portInformation(const QByteArray &value);
+    void acknowledgement(const QByteArray &value);
+    void sensorReading(const QByteArray &value);
+    void voltageReading(const QByteArray &value);
+
 Q_SIGNALS:
     void devicesUpdated();
     void servicesUpdated();
@@ -126,6 +183,9 @@ Q_SIGNALS:
     void stateChanged();
     void disconnected();
     void randomAddressChanged();
+
+    void deviceVoltageChanged();
+    void valueVoltageChanged();
 
 private:
     void setUpdate(const QString &message);
@@ -140,9 +200,17 @@ private:
     QString m_previousAddress;
     QString m_message;
     bool connected = false;
+    bool ready = false;
     QLowEnergyController *controller = nullptr;
     bool m_deviceScanState = false;
     bool randomAddress = false;
+
+    bool m_device_motorAB = false;
+    bool m_device_motorC = false; // external
+    bool m_device_voltage = false;
+    bool m_device_dcsensor = false;
+
+    double m_value_voltage = 0.0;
 };
 
 #endif // DEVICE_H

@@ -324,6 +324,24 @@ void Device::disconnectFromDevice()
         deviceDisconnected();
 }
 
+void Device::readVoltage(bool r)
+{
+    for (const auto s : m_services) {
+        auto sInfo = qobject_cast<ServiceInfo *>(s);
+        if (sInfo->service()->serviceUuid().toString() == m_service) {
+            for (const auto m : m_characteristics) {
+                auto cInfo = qobject_cast<CharacteristicInfo *>(m);
+                if (r) {
+                    sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), QByteArray::fromHex("0a01413c000100000001"));
+                } else {
+                    sInfo->service()->writeCharacteristic(cInfo->getCharacteristic(), QByteArray::fromHex("0a01413c000000000000"));
+                }
+            }
+        }
+    }
+
+}
+
 void Device::deviceDisconnected()
 {
     qWarning() << "Disconnect from device";
@@ -345,6 +363,8 @@ void Device::serviceDetailsDiscovered(QLowEnergyService::ServiceState s)
         if (!service)
             return;
 
+        ready = true;
+
         const QList<QLowEnergyCharacteristic> chars = service->characteristics();
         qDebug() << "chars size: " << chars.size();
         for (const QLowEnergyCharacteristic &ch : chars) {
@@ -355,7 +375,6 @@ void Device::serviceDetailsDiscovered(QLowEnergyService::ServiceState s)
                 auto notificationDesc = ch.descriptor(QBluetoothUuid::ClientCharacteristicConfiguration);
                 if (notificationDesc.isValid()) {
                     service->writeDescriptor(notificationDesc, QByteArray::fromHex("0100"));
-                    //service->writeCharacteristic(ch, QByteArray::fromHex("0a01413b000100000001"));
                 }
 
                 const QList<QLowEnergyDescriptor> descs = ch.descriptors();
@@ -385,13 +404,97 @@ void Device::updateValue(const QLowEnergyCharacteristic &c, const QByteArray &va
     if (c.uuid().toString() != m_characteristic)
         return;
 
+    uint len = (uint)value.at(0);
     qDebug() << Q_FUNC_INFO
-             << ", value: " << value.toHex() << "-" << value.size();
+             << ", value: " << value.toHex() << "-" << value.size() << "-" << len;
+
+    if (value.size() != len) {
+        qWarning() << "value: " << value.toHex() << " is broken!";
+        return;
+    }
+
+    uint msgType = (uint)value.at(2);
+    switch (msgType) {
+    case PortInformation:
+        portInformation(value);
+        break;
+    case Acknowledgement:
+        acknowledgement(value);
+        break;
+    case SensorReading:
+        sensorReading(value);
+        break;
+    default:
+        break;
+    }
 }
 
 void Device::confirmedDescriptorWrite()
 {
 
+}
+
+void Device::acknowledgement(const QByteArray &value)
+{
+    uint portType = (uint)value.at(3);
+    switch (portType) {
+    case PortVoltage:
+        qDebug() << "Voltage subscription acknowledged";
+        break;
+    default:
+        break;
+    }
+}
+
+void Device::voltageReading(const QByteArray &value)
+{
+    uint val = (unsigned char)value.at(4) * 256 + (unsigned char)value.at(5);
+
+    qDebug() << "val: " << val;
+
+    m_value_voltage = val / 4096.0;
+    qDebug() << "Voltage value: " << m_value_voltage;
+
+    emit valueVoltageChanged();
+}
+
+void Device::sensorReading(const QByteArray &value)
+{
+    uint portType = (uint)value.at(3);
+    switch (portType) {
+    case PortVoltage:
+        voltageReading(value);
+        break;
+    default:
+        break;
+    }
+}
+
+void Device::portInformation(const QByteArray &value)
+{
+    uint portType = (uint)value.at(3);
+    uint deviceEvent = (uint)value.at(4);
+    bool online = (deviceEvent != 0);
+
+    switch (portType) {
+    case PortAB:
+        m_device_motorAB = online;
+        break;
+    case PortVoltage:
+        m_device_voltage = online;
+        emit deviceVoltageChanged();
+        break;
+    case PortC:
+        m_device_motorC = online;
+        qDebug() << "motorc: " << online;
+        break;
+    case PortD:
+        m_device_dcsensor = online;
+        qDebug() << "dcsensor: " << online;
+        break;
+    default:
+        break;
+    }
 }
 
 void Device::deviceScanError(QBluetoothDeviceDiscoveryAgent::Error error)
@@ -446,4 +549,14 @@ void Device::sendCommand(const QByteArray &command)
             }
         }
     }
+}
+
+bool Device::deviceVoltage() const
+{
+    return m_device_voltage;
+}
+
+double Device::valueVoltage() const
+{
+    return m_value_voltage;
 }

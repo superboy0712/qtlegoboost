@@ -73,6 +73,8 @@ Rectangle {
         width: parent.width
         clip: true
 
+        property bool readV: false
+
         anchors.top: header.bottom
         anchors.bottom: menu.top
         model: device.characteristicList
@@ -128,8 +130,26 @@ Rectangle {
             }
 
             MouseArea {
-                anchors.fill: parent
+                id: voltageMA
+                anchors.left: parent.left
+                anchors.top: parent.top
+                width: 20
+                height: 20
                 onClicked: {
+                    console.log("voltageMA")
+                    characteristicview.readV = !characteristicview.readV
+                    device.readVoltage(characteristicview.readV)
+                }
+            }
+
+            MouseArea {
+                id: motorABMA
+                anchors.left: parent.left
+                anchors.bottom: parent.bottom
+                width: 20
+                height: 20
+                onClicked: {
+                    console.log("motorABMA")
                     motorAB.move(5000, 10, 10); //demo_motors_timed
                     motorCD.rotate(720); //demo_port_cd_motor
                 }
