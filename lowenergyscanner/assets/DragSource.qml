@@ -83,7 +83,7 @@ Item {
             Text {
                 anchors.fill: parent
                 color: "white"
-                font.pixelSize: 48
+                font.pixelSize: 24
                 text: modelData + 1
                 horizontalAlignment:Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

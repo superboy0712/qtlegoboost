@@ -54,7 +54,7 @@ import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.3
 
 Item {
-    width: 400
+    width: 500
     height: 800
     TabBar {
         id: bar
@@ -79,6 +79,8 @@ Item {
             id: playgroundTab
         }
     }
+
+    Component.onCompleted: bar.currentIndex = 1
 }
 
 

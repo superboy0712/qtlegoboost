@@ -56,32 +56,73 @@ Rectangle {
     width: 320
     height: 480
 
-    color: "black"
+//    color: "black"
 
     Column {
         id: redSource
 
         anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
-        anchors.margins: 5
-        width: 64*2
+        anchors.margins: 3
         spacing: 1
+        z: dragTarget.z + 1
 
         Repeater {
             model: 9
-            delegate: DragSource { colorKey: "red" }
+            delegate: DragSource { colorKey: "lightblue" }
         }
     }
-    Column {
-        id: blueSource
 
-        anchors.right: parent.right; anchors.top: parent.top; anchors.bottom: parent.bottom
-        anchors.margins: 5
-        width: 64
-        spacing: -16
+    DropArea {
+        id: dragTarget
+        anchors.top: parent.top
+        anchors.left: redSource.right
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        anchors.margins: 3
+        property string colorKey: "grey"
+        property alias dropProxy: dragTarget
+        width: 32; height: 32;
+//        keys: [ "color", "width" ]
 
-        Repeater {
-            model: 9
-            delegate: DragSource { colorKey: "blue" }
+        Rectangle {
+            id: shadowRect
+            // used as the valid drop position indicator
+            visible: false
+            width: 100
+            height: 100
+            color: "red"
+            z : 1
+            anchors.centerIn: parent
+            states: [
+                State {
+                    when: dragTarget.containsDrag
+                    PropertyChanges {
+                        target: shadowRect
+                        visible: true
+                        color: "orange"
+                        width: dragTarget.drag.source.width
+                        height: dragTarget.drag.source.height
+                    }
+                }
+            ]
+        }
+
+        Rectangle {
+            id: dropRectangle
+
+            anchors.fill: parent
+            color: "grey"
+            border.color: "lightsteelblue"
+            states: [
+                State {
+                    when: contains(Qt.point(drag.source.x, drag.source.y))//drag.x + drag.source.width >= dropRectangle.x && drag.x + drag.source.width <= dropRectangle.x + dropRectangle.width
+                    PropertyChanges {
+                        target: dropRectangle
+                        color: "grey"
+                    }
+                }
+            ]
         }
     }
+
 }
