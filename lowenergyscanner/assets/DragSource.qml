@@ -58,7 +58,8 @@ Item {
     Rectangle {
         id: sourceAnchor
         anchors.fill: parent
-        color: "green"
+        color: "lightgreen"
+        opacity: 0.4
     }
 
     MouseArea {
@@ -66,18 +67,37 @@ Item {
         Rectangle {
             id: maRect
             anchors.fill: parent
-            color: "yellow"
+            color: "lightsteelblue"
+            opacity: 0.3
         }
         width: root.width; height: root.height
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        drag.target: tile
 
+        drag.target: tile
         onReleased: {
-            parent = tile.Drag.target !== null ? tile.Drag.target : root
-            console.log(sr.x , sr.y)
-            mouseArea.x = sr.x
-            mouseArea.y = sr.y
+            if(mouse.button & Qt.LeftButton) {
+                console.log(sr.x , sr.y, "vs: ", mouseArea.x, mouseArea.y)
+                parent = tile.Drag.target !== null ? tile.Drag.target : root
+                if (tile.Drag.target === null) print("nulllll")
+                mouseArea.x = sr.x
+                mouseArea.y = sr.y
+                console.log("after: ", sr.x , sr.y, "vs: ", mouseArea.x, mouseArea.y)
+            }
+        }
+
+        acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+        onDoubleClicked: {
+            console.log("double clicked to delete:", index)
+            if(mouse.button & Qt.RightButton) {
+                if (root.children.length > 3) {
+                    tile.destroy()
+                    mouseArea.destroy()
+                } else {
+                    parent = root
+                    x = sourceAnchor.x
+                    y = sourceAnchor.y
+                }
+            }
         }
 
         Binding on anchors.verticalCenter {
@@ -85,15 +105,20 @@ Item {
             value: undefined
         }
 
+        Binding on anchors.verticalCenter {
+            when: parent === root
+            value: root.verticalCenter
+        }
+
         Binding on anchors.horizontalCenter {
             when: parent !== root
             value: undefined
         }
 
-//        states: State {
-//            when: parent !== root && !mouseArea.drag.active
-//            AnchorChanges { target: mouseArea; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined; }
-//        }
+        Binding on anchors.horizontalCenter {
+            when: parent === root
+            value: root.horizontalCenter
+        }
 
         Rectangle {
             id: tile

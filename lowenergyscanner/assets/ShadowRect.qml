@@ -13,7 +13,7 @@ Rectangle {
 //    z : 1
     parent: dropTarget
     function steppize(val) {
-        return Math.floor(val/20)*20
+        return Math.floor(val/16)*16
     }
 
     states: [
