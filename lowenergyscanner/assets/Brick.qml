@@ -67,7 +67,9 @@ MouseArea {
 
         if(mouse.button & Qt.LeftButton) {
             console.log("double left clicked to Run Code!:", objectName)
-            payLoad()
+//            payLoad()
+            timer.interval = 100
+            timer.start();
         }
     }
 
