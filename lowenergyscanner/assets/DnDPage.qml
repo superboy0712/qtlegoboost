@@ -50,6 +50,7 @@
 
 import QtQuick 2.0
 import QtQml.Models 2.2
+import QtQuick.Layouts 1.3
 Rectangle {
     id: root
 
@@ -84,13 +85,22 @@ Rectangle {
         anchors.margins: 3
         width: 32; height: 32;
 
-
         Rectangle {
             id: dropRectangle
 
             anchors.fill: parent
             color: "grey"
             border.color: "lightsteelblue"
+        }
+
+        onChildrenChanged: {
+//            for (var c in children) {
+//                print(children[c])
+//            }
+            let it = children[children.length - 1];
+            print("children: " + it)
+//            if (it !== dropRectangle)
+//                it.parent = brickDest
         }
 
     }

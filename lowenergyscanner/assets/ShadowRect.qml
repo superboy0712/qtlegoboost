@@ -26,8 +26,9 @@ Rectangle {
                 opacity: 0.4
                 width: dropTarget.drag.source.width
                 height: dropTarget.drag.source.height
-                x: steppize(dropTarget.drag.x)//dropTarget.drag.source.x - width//steppize(mapToItem(dropRectangle, dropTarget.drag.source.x, 0).x)
+//                x: steppize(dropTarget.drag.x)//dropTarget.drag.source.x - width//steppize(mapToItem(dropRectangle, dropTarget.drag.source.x, 0).x)
                 y: steppize(dropTarget.drag.y)//mapY(dropTarget.drag.source)//steppize(mapFromItem(dropRectangle, 0, dropTarget.drag.source.y).y)
+                anchors.horizontalCenter: (dropTarget.horizontalCenter === null)? undefined : dropTarget.horizontalCenter
             }
         }
     ]

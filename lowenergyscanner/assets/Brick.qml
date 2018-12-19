@@ -73,7 +73,7 @@ MouseArea {
 
         color: colorKey
         border.color: "grey"
-        Drag.keys: [ colorKey ]
+//        Drag.keys: [ colorKey ]
         Drag.active: mouseArea.drag.active
         Drag.hotSpot.x: 0
         Drag.hotSpot.y: 0
