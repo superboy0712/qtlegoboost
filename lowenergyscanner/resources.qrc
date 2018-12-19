@@ -10,7 +10,7 @@
         <file>assets/busy_dark.png</file>
         <file>assets/DnDPage.qml</file>
         <file>assets/ConnectPage.qml</file>
-        <file>assets/DragSource.qml</file>
+        <file>assets/PrimaryBrick.qml</file>
         <file>assets/ShadowRect.qml</file>
         <file>assets/Brick.qml</file>
     </qresource>

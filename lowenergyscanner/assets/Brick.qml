@@ -1,5 +1,5 @@
 import QtQuick 2.10
-
+import QtQuick.Controls 2.4
 MouseArea {
     property bool busy: root.busy
     property var payLoad: root.payLoad
@@ -112,6 +112,16 @@ MouseArea {
             horizontalAlignment:Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
+
+//        TextField {
+//            placeholderText: timer.interval
+//            anchors.top: tile.top
+//            anchors.left: tile.right
+//            anchors.bottom: tile.bottom
+//            anchors.margins: 3
+//            width: tile.width * 0.19
+//            validator: IntValidator {bottom: 10; top: 10000;}
+//        }
 //! [1]
         states: State {
             when: mouseArea.drag.active
@@ -127,25 +137,6 @@ MouseArea {
             when: !Drag.active
             value: parent.z
         }
-
-//        Binding on color {
-//            when: busy
-//            value: "blue"
-//        }
-
-//        Binding on color {
-//            when: ! busy
-//            value: colorKey
-//        }
-//        Binding on opacity {
-//            when: busy
-//            value: 0.5
-//        }
-
-//        Binding on opacity {
-//            when: ! busy
-//            value: 1
-//        }
 
     }
 }

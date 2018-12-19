@@ -63,45 +63,45 @@ Rectangle {
         anchors.margins: 3
         spacing: 1
         z: dragTarget.z + 1
-        DragSource {
+        PrimaryBrick {
             text: "Forward"
             payLoad: function() {motorAB.move(1000, -100, -100); }
         }
 
-        DragSource {
+        PrimaryBrick {
             busy: device.busy
             text: "Backwards"
             payLoad: function() {motorAB.move(1000, 100, 100); }
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Rotate"
             payLoad: function() {motorCD.rotate(720); }
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Color"
             colorKey: device.valueColor
             width: 96
             payLoad: function() {print(device.valueColor) ;}
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Turn Right"
             payLoad: function() {motorAB.move(1000, 0, -100); }
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Turn Left"
             payLoad: function() {motorAB.move(1000, -100, 0); }
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Reverse Left"
             payLoad: function() {motorAB.move(1000, 100, 0); }
         }
 
-        DragSource {
+        PrimaryBrick {
             text: "Reverse Right"
             payLoad: function() {motorAB.move(1000, 0, 100); }
         }
