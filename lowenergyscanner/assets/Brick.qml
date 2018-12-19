@@ -1,8 +1,9 @@
 import QtQuick 2.10
 
 MouseArea {
+    property bool busy: false
+    property var payLoad: root.payLoad
     function destroyOrReset() {
-        print("destroyOrReset()")
         if (root.children.length > 3) {
             tile.destroy()
             mouseArea.destroy()
@@ -12,6 +13,7 @@ MouseArea {
             mouseArea.y = sourceAnchor.y
         }
     }
+
     id: mouseArea
     objectName: "Brick"
     Rectangle {
@@ -35,16 +37,15 @@ MouseArea {
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     onDoubleClicked: {
         if(mouse.button & Qt.RightButton) {
-            console.log("double clicked to delete:", index, objectName)
+            console.log("double right clicked to delete:", objectName)
             destroyOrReset()
         }
 
         if(mouse.button & Qt.LeftButton) {
-            console.log("double clicked to Run Code!:", index, objectName)
-            root.payLoad()
+            console.log("double left clicked to Run Code!:", objectName)
+            payLoad()
         }
     }
-
 
     Binding on anchors.verticalCenter {
         when: parent !== root
@@ -75,7 +76,6 @@ MouseArea {
 
         color: colorKey
         border.color: "grey"
-//        Drag.keys: [ colorKey ]
         Drag.active: mouseArea.drag.active
         Drag.hotSpot.x: 0
         Drag.hotSpot.y: 0
@@ -84,7 +84,7 @@ MouseArea {
             anchors.fill: parent
             color: "white"
             font.pixelSize: 24
-            text: root.text + " " + modelData
+            text: root.text
             horizontalAlignment:Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -102,6 +102,25 @@ MouseArea {
         Binding on z {
             when: !Drag.active
             value: parent.z
+        }
+
+        Binding on color {
+            when: mouseArea.busy
+            value: "blue"
+        }
+
+        Binding on color {
+            when: ! mouseArea.busy
+            value: colorKey
+        }
+        Binding on opacity {
+            when: mouseArea.busy
+            value: 0.5
+        }
+
+        Binding on opacity {
+            when: ! mouseArea.busy
+            value: 1
         }
 
     }

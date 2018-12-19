@@ -49,8 +49,7 @@
 ****************************************************************************/
 
 import QtQuick 2.0
-import QtQml.Models 2.2
-import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.4
 Rectangle {
     id: root
 
@@ -64,16 +63,36 @@ Rectangle {
         anchors.margins: 3
         spacing: 1
         z: dragTarget.z + 1
-
-        Repeater {
-            model: 9
-            delegate: DragSource { text: "Dummy Brick"; colorKey: "lightblue" }
+        DragSource {
+            text: "Forward"
+            payLoad: function() {motorAB.move(2000, -100, -100);}
         }
+
+        DragSource {
+            text: "Rotate"
+            payLoad: function() {motorCD.rotate(720);}
+        }
+
+        DragSource {
+            text: "Color"
+            colorKey: "magenta"
+            width: 96
+            payLoad: function() {print("hello")}
+        }
+
     }
 
     ShadowRect {
         id: sr
         dropTarget: dragTarget
+    }
+
+    Button {
+        anchors.margins: 20
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        text: "Run"
+        onClicked: dragTarget.runBrickList()
     }
 
     DropArea {
@@ -103,14 +122,19 @@ Rectangle {
                  return a.y - b.y
             })
             for (var j in brickList) {
-                print("j: " + j + " y: " + brickList[j].y)
-                let prev = 50
+                let prev = 80
                 if (j < 1) brickList[j].y = 50;
                 else {
-                    brickList[j].y = brickList[j-1].y + 5 + brickList[j-1].height;
+                    brickList[j].y = brickList[j-1].y + 8 + brickList[j-1].height;
                 }
             }
 
+        }
+
+        function runBrickList() {
+            for (var i in brickList) {
+                brickList[i].payLoad();
+            }
         }
 
     }
