@@ -159,7 +159,8 @@ Rectangle {
 
         function runBrickList() {
             for (var i in brickList) {
-                brickList[i].payLoad();
+                brickList[i].timer.interval = 4000*i;
+                brickList[i].timer.start()
             }
         }
 

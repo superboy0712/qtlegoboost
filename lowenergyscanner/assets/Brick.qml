@@ -3,6 +3,7 @@ import QtQuick 2.10
 MouseArea {
     property bool busy: root.busy
     property var payLoad: root.payLoad
+    property alias timer: timer
     function destroyOrReset() {
         if (root.children.length > 3) {
             tile.destroy()
@@ -11,6 +12,25 @@ MouseArea {
             mouseArea.parent = root
             mouseArea.x = sourceAnchor.x
             mouseArea.y = sourceAnchor.y
+        }
+    }
+
+    Timer {
+        id: timer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            if (!busy && !repeat) {
+                busy = true
+                interval: 2000
+                tile.color = "red"
+                payLoad()
+                repeat = true
+            }
+            else {
+                busy = false
+                repeat = false
+            }
         }
     }
 
