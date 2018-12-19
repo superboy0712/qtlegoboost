@@ -53,7 +53,7 @@ import QtTest 1.0
 //! [0]
 Item {
     id: root
-    property string colorKey : "lightblue"
+    property string colorKey : "steelblue"
     property string text
     property bool busy : false
     property var payLoad: function () { print("yooyo ", index); /*if(!busy) {busy = true;tile.color = "red";} else busy = false; */}

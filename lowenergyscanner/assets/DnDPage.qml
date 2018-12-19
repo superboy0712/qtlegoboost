@@ -69,7 +69,6 @@ Rectangle {
         }
 
         PrimaryBrick {
-            busy: device.busy
             text: "Backwards"
             payLoad: function() {motorAB.move(1000, 100, 100); }
         }
@@ -82,8 +81,7 @@ Rectangle {
         PrimaryBrick {
             text: "Color"
             colorKey: device.valueColor
-            width: 96
-            payLoad: function() {print(device.valueColor) ;}
+            payLoad: function() {print(device.valueColor); colorKey = device.valueColor}
         }
 
         PrimaryBrick {
