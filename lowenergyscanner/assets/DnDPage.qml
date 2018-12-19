@@ -65,45 +65,45 @@ Rectangle {
         z: dragTarget.z + 1
         DragSource {
             text: "Forward"
-            payLoad: function() {motorAB.move(1000, -100, -100); busy = true; while(device.busy) {}; busy = false;}
+            payLoad: function() {motorAB.move(1000, -100, -100); }
         }
 
         DragSource {
             busy: device.busy
             text: "Backwards"
-            payLoad: function() {motorAB.move(1000, 100, 100); busy = true; while(device.busy) {;}; busy = false;}
+            payLoad: function() {motorAB.move(1000, 100, 100); }
         }
 
         DragSource {
             text: "Rotate"
-            payLoad: function() {motorCD.rotate(720); busy = true; while(device.busy) {;}; busy = false;}
+            payLoad: function() {motorCD.rotate(720); }
         }
 
         DragSource {
             text: "Color"
             colorKey: device.valueColor
             width: 96
-            payLoad: function() {print(device.valueColor) ;busy = true; while(device.busy) {;}; busy = false;}
+            payLoad: function() {print(device.valueColor) ;}
         }
 
         DragSource {
             text: "Turn Right"
-            payLoad: function() {motorAB.move(1000, 0, -100); busy = true; while(device.busy) {}; busy = false;}
+            payLoad: function() {motorAB.move(1000, 0, -100); }
         }
 
         DragSource {
             text: "Turn Left"
-            payLoad: function() {motorAB.move(1000, -100, 0); busy = true; while(device.busy) {}; busy = false;}
+            payLoad: function() {motorAB.move(1000, -100, 0); }
         }
 
         DragSource {
             text: "Reverse Left"
-            payLoad: function() {motorAB.move(1000, 100, 0); busy = true; while(device.busy) {}; busy = false;}
+            payLoad: function() {motorAB.move(1000, 100, 0); }
         }
 
         DragSource {
             text: "Reverse Right"
-            payLoad: function() {motorAB.move(1000, 0, 100); busy = true; while(device.busy) {}; busy = false;}
+            payLoad: function() {motorAB.move(1000, 0, 100); }
         }
 
     }
@@ -148,8 +148,7 @@ Rectangle {
                  return a.y - b.y
             })
             for (var j in brickList) {
-                let prev = 80
-                if (j < 1) brickList[j].y = 50;
+                if (j < 1) brickList[j].y = 80;
                 else {
                     brickList[j].y = brickList[j-1].y + 8 + brickList[j-1].height;
                 }
@@ -159,7 +158,7 @@ Rectangle {
 
         function runBrickList() {
             for (var i in brickList) {
-                brickList[i].timer.interval = 4000*i;
+                brickList[i].timer.interval =  300 + 1500 * (i);
                 brickList[i].timer.start()
             }
         }

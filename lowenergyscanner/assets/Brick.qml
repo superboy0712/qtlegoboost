@@ -17,19 +17,23 @@ MouseArea {
 
     Timer {
         id: timer
-        interval: 1000
-        repeat: false
+        interval: 0
+        repeat: true
         onTriggered: {
-            if (!busy && !repeat) {
+            if (!busy) {
                 busy = true
-                interval: 2000
+                interval= 1500
                 tile.color = "red"
+                tile.opacity = 0.3
                 payLoad()
-                repeat = true
+                repeat = false
             }
             else {
+                tile.color = colorKey
+                tile.opacity = 1
                 busy = false
-                repeat = false
+                repeat = true
+                interval = 0
             }
         }
     }
@@ -124,24 +128,24 @@ MouseArea {
             value: parent.z
         }
 
-        Binding on color {
-            when: mouseArea.busy
-            value: "blue"
-        }
+//        Binding on color {
+//            when: busy
+//            value: "blue"
+//        }
 
-        Binding on color {
-            when: ! mouseArea.busy
-            value: colorKey
-        }
-        Binding on opacity {
-            when: mouseArea.busy
-            value: 0.5
-        }
+//        Binding on color {
+//            when: ! busy
+//            value: colorKey
+//        }
+//        Binding on opacity {
+//            when: busy
+//            value: 0.5
+//        }
 
-        Binding on opacity {
-            when: ! mouseArea.busy
-            value: 1
-        }
+//        Binding on opacity {
+//            when: ! busy
+//            value: 1
+//        }
 
     }
 }
