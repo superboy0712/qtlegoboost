@@ -56,7 +56,7 @@ Rectangle {
 
     width: 320
     height: 480
-
+    property var brickList : []
     Column {
         id: brickSource
 
@@ -93,14 +93,24 @@ Rectangle {
             border.color: "lightsteelblue"
         }
 
-        onChildrenChanged: {
-//            for (var c in children) {
-//                print(children[c])
-//            }
-            let it = children[children.length - 1];
-            print("children: " + it)
-//            if (it !== dropRectangle)
-//                it.parent = brickDest
+        function sortVisibleChildren() {
+            brickList = []
+            for (var i in dragTarget.children) {
+                if (dragTarget.children[i].objectName === "Brick")
+                    brickList.push(dragTarget.children[i])
+            }
+            brickList.sort(function(a, b) {
+                 return a.y - b.y
+            })
+            for (var j in brickList) {
+                print("j: " + j + " y: " + brickList[j].y)
+                let prev = 50
+                if (j < 1) brickList[j].y = 50;
+                else {
+                    brickList[j].y = brickList[j-1].y + 5 + brickList[j-1].height;
+                }
+            }
+
         }
 
     }

@@ -13,6 +13,7 @@ MouseArea {
         }
     }
     id: mouseArea
+    objectName: "Brick"
     Rectangle {
         id: maRect
         anchors.fill: parent
@@ -28,6 +29,7 @@ MouseArea {
             mouseArea.x = sr.x
             mouseArea.y = sr.y
         }
+        dragTarget.sortVisibleChildren()
     }
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
