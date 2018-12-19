@@ -65,19 +65,45 @@ Rectangle {
         z: dragTarget.z + 1
         DragSource {
             text: "Forward"
-            payLoad: function() {motorAB.move(2000, -100, -100);}
+            payLoad: function() {motorAB.move(1000, -100, -100); busy = true; while(device.busy) {}; busy = false;}
+        }
+
+        DragSource {
+            busy: device.busy
+            text: "Backwards"
+            payLoad: function() {motorAB.move(1000, 100, 100); busy = true; while(device.busy) {;}; busy = false;}
         }
 
         DragSource {
             text: "Rotate"
-            payLoad: function() {motorCD.rotate(720);}
+            payLoad: function() {motorCD.rotate(720); busy = true; while(device.busy) {;}; busy = false;}
         }
 
         DragSource {
             text: "Color"
-            colorKey: "magenta"
+            colorKey: device.valueColor
             width: 96
-            payLoad: function() {print("hello")}
+            payLoad: function() {print(device.valueColor) ;busy = true; while(device.busy) {;}; busy = false;}
+        }
+
+        DragSource {
+            text: "Turn Right"
+            payLoad: function() {motorAB.move(1000, 0, -100); busy = true; while(device.busy) {}; busy = false;}
+        }
+
+        DragSource {
+            text: "Turn Left"
+            payLoad: function() {motorAB.move(1000, -100, 0); busy = true; while(device.busy) {}; busy = false;}
+        }
+
+        DragSource {
+            text: "Reverse Left"
+            payLoad: function() {motorAB.move(1000, 100, 0); busy = true; while(device.busy) {}; busy = false;}
+        }
+
+        DragSource {
+            text: "Reverse Right"
+            payLoad: function() {motorAB.move(1000, 0, 100); busy = true; while(device.busy) {}; busy = false;}
         }
 
     }

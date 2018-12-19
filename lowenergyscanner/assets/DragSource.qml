@@ -55,6 +55,7 @@ Item {
     id: root
     property string colorKey : "lightblue"
     property string text
+    property bool busy : false
     property var payLoad: function () { print("yooyo ", index); /*if(!busy) {busy = true;tile.color = "red";} else busy = false; */}
     width: 192; height: 32
     Rectangle {

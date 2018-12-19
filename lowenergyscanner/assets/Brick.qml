@@ -1,7 +1,7 @@
 import QtQuick 2.10
 
 MouseArea {
-    property bool busy: false
+    property bool busy: root.busy
     property var payLoad: root.payLoad
     function destroyOrReset() {
         if (root.children.length > 3) {
