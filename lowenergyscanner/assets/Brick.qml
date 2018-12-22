@@ -1,20 +1,29 @@
 import QtQuick 2.10
 import QtQuick.Controls 2.4
+
 MouseArea {
-    property bool busy: root.busy
-    property var payLoad: root.payLoad
+    property bool busy: brickItem.busy
+    property var payLoad: brickItem.payLoad
     property alias timer: timer
+    readonly property int duration: 1500
     function destroyOrReset() {
-        if (root.children.length > 3) {
-            tile.destroy()
+        if (brickItem.children.length > 3) {
+            for (var i in mouseArea.children) {
+                mouseArea.children[i].destroy()
+            }
             mouseArea.destroy()
         } else {
-            mouseArea.parent = root
-            mouseArea.x = sourceAnchor.x
-            mouseArea.y = sourceAnchor.y
+            mouseArea.parent = brickItem
+            mouseArea.x = sourceAnchorRect.x
+            mouseArea.y = sourceAnchorRect.y
         }
     }
-
+    onClicked: {
+        if(mouse.button & Qt.RightButton) {
+            console.log("right clicked to delete:", objectName)
+            destroyOrReset()
+        }
+    }
     Timer {
         id: timer
         interval: 0
@@ -22,7 +31,7 @@ MouseArea {
         onTriggered: {
             if (!busy) {
                 busy = true
-                interval= 1500
+                interval= duration
                 tile.color = "red"
                 tile.opacity = 0.3
                 payLoad()
@@ -46,57 +55,32 @@ MouseArea {
         color: "lightsteelblue"
         opacity: 0.3
     }
-    width: root.width; height: root.height
+    width: brickItem.width; height: brickItem.height
+    z: (drag.active) ? 1 : 0 // raise above siblings while being dragged
     drag.target: tile
     onReleased: {
         if(mouse.button & Qt.LeftButton) {
             if (tile.Drag.target === null) return;
-            parent = tile.Drag.target !== null ? tile.Drag.target : root
-            mouseArea.x = sr.x
-            mouseArea.y = sr.y
+            parent = tile.Drag.target
+            mouseArea.x = shadowRect.x
+            mouseArea.y = shadowRect.y
         }
-        dragTarget.sortVisibleChildren()
+        dropTarget.sortVisibleChildren()
     }
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     onDoubleClicked: {
-        if(mouse.button & Qt.RightButton) {
-            console.log("double right clicked to delete:", objectName)
-            destroyOrReset()
-        }
-
         if(mouse.button & Qt.LeftButton) {
             console.log("double left clicked to Run Code!:", objectName)
-//            payLoad()
-            timer.interval = 100
+            timer.interval = 100 // 0 too soon to run
             timer.start();
         }
-    }
-
-    Binding on anchors.verticalCenter {
-        when: parent !== root
-        value: undefined
-    }
-
-    Binding on anchors.verticalCenter {
-        when: parent === root
-        value: root.verticalCenter
-    }
-
-    Binding on anchors.horizontalCenter {
-        when: parent !== root
-        value: undefined
-    }
-
-    Binding on anchors.horizontalCenter {
-        when: parent === root
-        value: root.horizontalCenter
     }
 
     Rectangle {
         id: tile
 
-        width: root.width; height: root.height
+        width: brickItem.width; height: brickItem.height
         anchors.verticalCenter: mouseArea.verticalCenter
         anchors.horizontalCenter: mouseArea.horizontalCenter
 
@@ -110,7 +94,7 @@ MouseArea {
             anchors.fill: parent
             color: "white"
             font.pixelSize: 24
-            text: root.text
+            text: brickItem.text
             horizontalAlignment:Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
@@ -129,16 +113,5 @@ MouseArea {
             when: mouseArea.drag.active
             AnchorChanges { target: tile; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
         }
-
-        Binding on z {
-            when: Drag.active
-            value: parent.z + 2
-        }
-
-        Binding on z {
-            when: !Drag.active
-            value: parent.z
-        }
-
     }
 }

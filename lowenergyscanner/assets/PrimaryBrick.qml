@@ -52,36 +52,29 @@ import QtQuick 2.11
 import QtTest 1.0
 //! [0]
 Item {
-    id: root
+    id: brickItem
     property string colorKey : "steelblue"
     property string text
     property bool busy : false
-    property var payLoad: function () { print("yooyo ", index); /*if(!busy) {busy = true;tile.color = "red";} else busy = false; */}
+    property var payLoad: function () { print("yooyo ", index);}
     width: 192; height: 32
+
     Rectangle {
-        id: sourceAnchor
+        id: sourceAnchorRect
         anchors.fill: parent
         color: "lightgreen"
         opacity: 0.4
     }
 
-
     Component {
         id: brick
         Brick {}
     }
-
-    Brick {
-
-    }
-
-    Brick {
-
-    }
-
+    Brick {}
+    Brick {}
     onChildrenChanged: {
-        if (root.children.length < 3) {
-            brick.createObject(root)
+        if (brickItem.children.length < 3) {
+            brick.createObject(brickItem)
         }
     }
 }

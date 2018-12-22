@@ -51,18 +51,19 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.4
 Rectangle {
-    id: root
+    id: dndPage
 
     width: 320
     height: 480
     property var brickList : []
+    readonly property int dropAreaSpacing : 8
     Column {
         id: brickSource
 
         anchors.left: parent.left; anchors.top: parent.top; anchors.bottom: parent.bottom
         anchors.margins: 3
         spacing: 1
-        z: dragTarget.z + 1
+        z: dropTarget.z + 1
         PrimaryBrick {
             text: "Forward"
             payLoad: function() {motorAB.move(1000, -100, -100); }
@@ -107,8 +108,8 @@ Rectangle {
     }
 
     ShadowRect {
-        id: sr
-        dropTarget: dragTarget
+        id: shadowRect
+        dropTarget: dropTarget
     }
 
     Button {
@@ -116,11 +117,11 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         text: "Run"
-        onClicked: dragTarget.runBrickList()
+        onClicked: dropTarget.runBrickList()
     }
 
     DropArea {
-        id: dragTarget
+        id: dropTarget
         anchors.top: parent.top
         anchors.left: brickSource.right
         anchors.bottom: parent.bottom
@@ -138,17 +139,17 @@ Rectangle {
 
         function sortVisibleChildren() {
             brickList = []
-            for (var i in dragTarget.children) {
-                if (dragTarget.children[i].objectName === "Brick")
-                    brickList.push(dragTarget.children[i])
+            for (var i in dropTarget.children) {
+                if (dropTarget.children[i].objectName === "Brick")
+                    brickList.push(dropTarget.children[i])
             }
             brickList.sort(function(a, b) {
                  return a.y - b.y
             })
             for (var j in brickList) {
-                if (j < 1) brickList[j].y = 80;
+                if (j < 1) brickList[j].y = dropAreaSpacing * 10;
                 else {
-                    brickList[j].y = brickList[j-1].y + 8 + brickList[j-1].height;
+                    brickList[j].y = brickList[j-1].y + dropAreaSpacing + brickList[j-1].height;
                 }
             }
 
